@@ -36,12 +36,17 @@ const Admin = require('./routes/adminRouter');
 const User = require('./routes/userRouter');
 
 
+//set for ejs
+app.set('view engine' , 'ejs');
+
+//static folder
+app.use(express.static('./public'));
 
 //actual routes
 app.use("/admin", Admin);
 app.use("/user", User);
 app.get("/",(req,res) => {
-  res.send("Welcome to the Medical Store")
+  res.render("app")
 })
 
 //passport middleware
