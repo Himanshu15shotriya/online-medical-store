@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js"
   },
-  "engines " : {
-    "npm" : "7.x"
+  "engines": {
+    "npm": "7.x"
   },
   "author": "himanshu shotriya",
   "license": "ISC",
