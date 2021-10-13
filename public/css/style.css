@@ -1,0 +1,16 @@
+body{
+    background-image: url("../images/banner.jpg");
+    background-repeat : no-repeat;
+    background-size: cover;
+    
+}
+p{
+    color: rgb(100,180,240);
+    font-size:100px;
+    text-align: center;
+    margin-top : 200px;
+    transition: ease-in-out;
+    transition-duration: 10s;
+    transform: rotate(360d);
+
+}
