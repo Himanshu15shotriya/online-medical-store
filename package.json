@@ -6,10 +6,6 @@
   "scripts": {
     "start": "node index.js"
   },
-  "engines " : {
-    "npm" : "7.9.0",
-    "node" : "15.14.0"
-  },
   "author": "himanshu shotriya",
   "license": "ISC",
   "dependencies": {
