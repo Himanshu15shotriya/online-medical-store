@@ -2,15 +2,56 @@ body{
     background-image: url("../images/banner.jpg");
     background-repeat : no-repeat;
     background-size: cover;
-    
 }
-p{
-    color: rgb(100,180,240);
+div{
+    margin-top : 35px
+}
+spam{
+    color: rgb(4,92,166);
     font-size:100px;
-    text-align: center;
-    margin-top : 200px;
-    transition: ease-in-out;
-    transition-duration: 10s;
-    transform: rotate(360d);
+    font-weight : bolder
+}
 
+#p1{
+    animation-name: example;
+    animation-duration: 2.5s;
+    margin-left : 550px;
+}  
+@keyframes example {
+    from {
+        opacity : 0;
+        margin-left : 0px;
+    }
+    to {
+        opacity : 1;
+        margin-left : 550px
+    }
+}
+
+#p2{
+    animation-name: example1;
+    animation-duration: 2.5s;
+    margin-left : 700px;
+}
+@keyframes example1 {
+    0%{opacity : 0}
+    40%{opacity : 0}
+    100% {opacity : 1;}
+}
+
+#p3{
+    animation-name: example2;
+    animation-duration: 2.5s;
+    margin-right : 560px;
+    float : right
+}
+@keyframes example2 {
+    from {
+        opacity : 0;
+        margin-right : 0px;
+    }
+    to {
+        opacity : 1;
+        margin-right : 560px
+    }
 }
