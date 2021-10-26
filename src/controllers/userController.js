@@ -5,8 +5,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/Users')
 const Medicine = require('../models/Medicines')
 const Mycart = require('../models/MyCart');
-const MyCart = require('../models/MyCart');
-const { response } = require('express');
 
 // @type     POST
 // @route    /user/signup
@@ -97,7 +95,7 @@ module.exports.userSignin = async(req,res) => {
     try {
         const user  = await User.findOne({email : req.body.email});
         if(user){
-            const comparePassword = await bcrypt.compare(req.body.password, user.password)
+            const comparePassword = await bcrypt.compare(req.body.password,user.password)
             if(comparePassword){
                 const payload = {
                     id : user.id,
@@ -231,7 +229,7 @@ module.exports.userAddToCart = async(req,res) => {
     try{
         const medicine = await Medicine.findOne({_id : req.params.id})
         if(medicine){
-            const medicine2 = await MyCart.findOne({name : medicine.name,user : req.user.id})
+            const medicine2 = await Mycart.findOne({name : medicine.name,user : req.user.id})
             if(medicine2){
                 if(medicine2.quantity>=6){
                     res.status(200).send({
@@ -240,11 +238,23 @@ module.exports.userAddToCart = async(req,res) => {
                     })
                 }
                 else{
-                    var quantity = parseInt(req.body.quantity)
-                    if((quantity+medicine2.quantity)>6){
+                    var quantity = parseInt(req.body.quantity);
+                    if(medicine.quantity <= 0){
+                        res.status(200).send({
+                            success: false,
+                            message: "This medicine is out of stock"
+                        })
+                    }
+                    else if((quantity+medicine2.quantity)>6){
                         res.status(200).send({
                             success: false,
                             message:`You cannot add ${req.body.quantity} quantities as you can add only ${6-medicine2.quantity} quantities`
+                        })
+                    }
+                    else if((medicine.quantity-quantity)<0){
+                        res.status(200).send({
+                            success: false,
+                            message:`You cannot add ${req.body.quantity} quantities because only ${medicine.quantity} quantities left in stock`
                         })
                     }
                     else{
@@ -364,7 +374,7 @@ module.exports.userAddToCart = async(req,res) => {
 // @access   PUBLIC 
 module.exports.userRemoveFromCart = async (req,res)=> {
     try{
-        const medicineMyCart = await MyCart.findOneAndRemove({_id : req.params.id})
+        const medicineMyCart = await Mycart.findOneAndRemove({_id : req.params.id})
         if(medicineMyCart){
             const medicineMedicine = await Medicine.findOne({name : medicineMyCart.name})
             if(medicineMedicine){
@@ -427,18 +437,13 @@ module.exports.userMyCart = async(req,res) => {
                     sum = sum1
                 }
                 var discountedPrice = sum - (sum*process.env.Discount/100)
-                if(req.body.coupon === ""){
+                if(req.body.coupon === "" || !req.body.coupon){
                     res.status(200).send({
                         success: true,
                         Total_Cart_Price: `Total price of your medicines is ₹${sum}`,
                         Discounted_Price : discountedPrice ,
+                        You_Save : sum-discountedPrice,
                         medicines : medicine
-                    })
-                }
-                else if(req.body.coupon !== process.env.Discount_Coupon){
-                    res.status(200).send({
-                        success : false,
-                        message : "Please enter a valid coupen"
                     })
                 }
                 else if(sum < 200){
@@ -448,14 +453,30 @@ module.exports.userMyCart = async(req,res) => {
                     })
                 }
                 else{
-                    res.status(200).send({
+                    var discountCoupons = ["MEDICINE100","FIRST100","DIWALI100"]
+                    for(i=0;i<discountCoupons.length;i++){
+                        if(req.body.coupon === discountCoupons[i]){
+                            var couponResponse = discountCoupons[i]
+                            break;
+                        }
+                    }
+                    if(req.body.coupon === couponResponse){
+                        res.status(200).send({
                         success: true,
                         Total_Cart_Price: `Total price of your medicines is ₹${sum}`,
                         Discounted_Price : "₹"+discountedPrice,
-                        Coupon : req.body.coupon + " Applied! ₹100 OFF",
+                        Coupon : couponResponse + " Applied! ₹100 OFF",
                         Final_Price : "₹"+(discountedPrice - 100) ,
+                        You_Save : "₹"+((sum-discountedPrice)+100),
                         Medicines : medicine
-                    })
+                        }
+                    )}
+                    else{
+                        res.status(200).send({
+                            success : false,
+                            message : "Please enter a valid coupon"
+                        })
+                    }
                 }
             }
             else{
